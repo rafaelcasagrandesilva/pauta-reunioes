@@ -340,7 +340,7 @@ if st.session_state.pagina == "lista":
 
     status_filtro = st.sidebar.multiselect(
         "Status",
-        ["Novo", "Em andamento", "Concluído", "Atrasado"],
+        ["Em andamento", "Concluído", "Atrasado"],
         placeholder="Selecione"
     )
 
@@ -370,7 +370,7 @@ if st.session_state.pagina == "lista":
             elif valor == "Atrasado":
                 return "🔴 Atrasado"
             else:
-                return "⚪ Novo"
+                return "🟡 Em andamento"
 
         df_filtrado["status_visual"] = df_filtrado["status"].apply(status_visual)
 
@@ -513,8 +513,8 @@ if st.session_state.pagina == "editar" and usuario.perfil in ["admin", "editor"]
 
             status = st.selectbox(
                 "Status",
-                ["Novo", "Em andamento", "Concluído", "Atrasado"],
-                index=["Novo", "Em andamento", "Concluído", "Atrasado"].index(tarefa.status)
+                ["Em andamento", "Concluído", "Atrasado"],
+                index=["Em andamento", "Concluído", "Atrasado"].index(tarefa.status if tarefa.status != "Novo" else "Em andamento")
             )
 
             prioridade = st.selectbox(
@@ -584,7 +584,7 @@ if st.session_state.pagina == "nova" and usuario.perfil in ["admin", "editor"]:
                 responsavel=responsavel,
                 prazo=str(prazo),
                 observacoes=observacoes,
-                status="Novo",
+                status="Em andamento",
                 prioridade=prioridade,
             )
             session.add(nova)
