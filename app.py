@@ -181,11 +181,25 @@ div[data-testid="stDataEditor"] {
     color: #E5E7EB !important;
 }
 
-/* Inputs APENAS dentro de formulários */
-[data-testid="stForm"] input {
-    background-color: #FFFFFF !important;
-    color: #111827 !important;
-    border: 1px solid #D1D5DB !important;
+/* Inputs padronizados (TODAS as telas) */
+input, textarea, select {
+    background-color: #1F2937 !important;
+    color: #F3F4F6 !important;
+    border: 1px solid #374151 !important;
+}
+
+/* Selectbox (dropdown) */
+[data-baseweb="select"] > div {
+    background-color: #1F2937 !important;
+    color: #F3F4F6 !important;
+    border: 1px solid #374151 !important;
+}
+
+/* Campo de texto interno (Streamlit wrapper) */
+[data-testid="stTextInput"] div[data-baseweb="input"],
+[data-testid="stTextArea"] textarea {
+    background-color: #1F2937 !important;
+    color: #F3F4F6 !important;
 }
 
 /* CORREÇÃO DO OLHINHO (Ícone de Senha) */
@@ -216,6 +230,27 @@ div[data-testid="stDataEditor"] {
     border-radius: 10px !important;
 }
 
+/* ===== CORREÇÃO SELECTBOX (remove borda estranha) ===== */
+[data-baseweb="select"] > div {
+    background-color: #1F2937 !important;
+    color: #F3F4F6 !important;
+    border: 1px solid #374151 !important;
+    box-shadow: none !important;   /* remove sombra */
+    outline: none !important;      /* remove contorno */
+}
+
+/* Remove efeito ao clicar */
+[data-baseweb="select"] > div:focus,
+[data-baseweb="select"] > div:active {
+    box-shadow: none !important;
+    outline: none !important;
+    border: 1px solid #374151 !important;
+}
+
+/* Texto interno */
+[data-baseweb="select"] span {
+    color: #F3F4F6 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -365,6 +400,7 @@ if st.session_state.pagina == "lista":
 
         # ===== COLUNA DE AÇÃO (EDITAR) =====
         df_filtrado["editar"] = False
+        df_filtrado["excluir"] = False
 
         edited_df = st.data_editor(
             df_filtrado,
@@ -398,6 +434,10 @@ if st.session_state.pagina == "lista":
                     "Editar",
                     help="Marque para editar"
                 ),
+                "excluir": st.column_config.CheckboxColumn(
+                    "Excluir",
+                    help="Marque para excluir"
+                ),
             }
         )
 
@@ -414,7 +454,7 @@ if st.session_state.pagina == "lista":
                 for _, row in edited_df.iterrows():
                     tarefa = session.query(Tarefa).get(row["id"])
                     for col in df.columns:
-                        if col in row and col != "editar":
+                        if col in row and col not in ["editar", "excluir"]:
                             valor = row[col]
 
                             # Converter prazo de volta para string antes de salvar
@@ -425,6 +465,21 @@ if st.session_state.pagina == "lista":
                     tarefa.ultima_atualizacao = datetime.now()
                 session.commit()
                 st.success("Atualizado")
+
+            if st.button("Excluir tarefas selecionadas"):
+                ids_excluir = edited_df[edited_df["excluir"] == True]["id"].tolist()
+
+                if ids_excluir:
+                    for tarefa_id in ids_excluir:
+                        tarefa = session.query(Tarefa).get(tarefa_id)
+                        if tarefa:
+                            session.delete(tarefa)
+
+                    session.commit()
+                    st.success("Tarefa(s) excluída(s) com sucesso!")
+                    st.rerun()
+                else:
+                    st.warning("Nenhuma tarefa selecionada para exclusão.")
 
 if st.session_state.pagina == "editar" and usuario.perfil in ["admin", "editor"]:
     st.title("Editar tarefa")
