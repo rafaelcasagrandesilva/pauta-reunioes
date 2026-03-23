@@ -26,7 +26,7 @@ body {
 
 /* Container principal */
 .block-container {
-    padding-top: 2rem;
+    padding-top: 1.3rem;
 }
 
 /* Títulos */
@@ -600,6 +600,6 @@ if st.sidebar.button("Sair"):
 
 # ================= FOOTER =================
 st.markdown(
-    '<div style="text-align:center;color:#9CA3AF;font-size:0.8rem;margin-top:3rem;">Desenvolvido por Casagrande para M&E Engenharia • 2026</div>',
+    '<div style="text-align:center;color:#9CA3AF;font-size:0.8rem;margin-top:1rem;">Desenvolvido por Casagrande para M&E Engenharia • 2026</div>',
     unsafe_allow_html=True
 )
