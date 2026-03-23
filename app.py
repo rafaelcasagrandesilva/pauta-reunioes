@@ -26,7 +26,7 @@ body {
 
 /* Container principal */
 .block-container {
-    padding-top: 1rem;
+    padding-top: 1.5rem;
 }
 
 /* Títulos */
