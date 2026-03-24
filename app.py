@@ -350,6 +350,12 @@ if st.session_state.pagina == "lista":
         placeholder="Selecione"
     )
 
+    prioridade_filtro = st.sidebar.multiselect(
+        "Prioridade",
+        ["Baixa", "Média", "Alta"],
+        placeholder="Selecione"
+    )
+
     df_filtrado = df.copy()
 
     if status_filtro:
